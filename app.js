@@ -40,7 +40,9 @@ const els = {
   prevBtn: document.getElementById("prevBtn"),
   flipBtn: document.getElementById("flipBtn"),
   nextBtn: document.getElementById("nextBtn"),
-  knownBtn: document.getElementById("knownBtn"),
+  notStudiedBtn: document.getElementById("notStudiedBtn"),
+  learningBtn: document.getElementById("learningBtn"),
+  masteredBtn: document.getElementById("masteredBtn"),
   notStudiedCount: document.getElementById("notStudiedCount"),
   learningCount: document.getElementById("learningCount"),
   masteredCount: document.getElementById("masteredCount"),
@@ -110,7 +112,9 @@ function bindEvents() {
   els.flipBtn.addEventListener("click", flipCard);
   els.prevBtn.addEventListener("click", previousCard);
   els.nextBtn.addEventListener("click", nextCard);
-  els.knownBtn.addEventListener("click", toggleMasteredCurrent);
+  els.notStudiedBtn.addEventListener("click", () => setCurrentStatus("new"));
+  els.learningBtn.addEventListener("click", () => setCurrentStatus("learning"));
+  els.masteredBtn.addEventListener("click", () => setCurrentStatus("known"));
   els.nextQuizBtn.addEventListener("click", nextQuizQuestion);
   els.exportBtn.addEventListener("click", exportCsv);
 }
@@ -189,7 +193,15 @@ function renderAll() {
 
 function renderCard() {
   const word = state.filtered[state.currentIndex];
-  const controls = [els.prevBtn, els.flipBtn, els.nextBtn, els.knownBtn, els.shuffleTopBtn];
+  const controls = [
+    els.prevBtn,
+    els.flipBtn,
+    els.nextBtn,
+    els.notStudiedBtn,
+    els.learningBtn,
+    els.masteredBtn,
+    els.shuffleTopBtn,
+  ];
 
   els.flashcard.classList.remove("flipped");
   controls.forEach((button) => {
@@ -203,7 +215,7 @@ function renderCard() {
     els.cardSimple.textContent = "Try changing your filters.";
     els.cardArabic.textContent = "لا توجد كلمات";
     els.cardExample.textContent = "";
-    els.knownBtn.textContent = "Mark Mastered";
+    updateStatusButtons(null);
     renderDots();
     return;
   }
@@ -214,7 +226,7 @@ function renderCard() {
   els.cardSimple.textContent = word.simple;
   els.cardArabic.textContent = word.arabic;
   els.cardExample.textContent = word.example;
-  els.knownBtn.textContent = getStatus(word) === "known" ? "Mark Not Studied" : "Mark Mastered";
+  updateStatusButtons(word);
   renderDots();
 }
 
@@ -354,12 +366,25 @@ function shuffleCards() {
   renderAll();
 }
 
-function toggleMasteredCurrent() {
+function setCurrentStatus(status) {
   const word = state.filtered[state.currentIndex];
   if (!word) return;
 
-  setStatus(word.id, getStatus(word) === "known" ? "new" : "known");
+  setStatus(word.id, status);
   renderAll();
+}
+
+function updateStatusButtons(word) {
+  const buttons = [
+    [els.notStudiedBtn, "new"],
+    [els.learningBtn, "learning"],
+    [els.masteredBtn, "known"],
+  ];
+  const currentStatus = word ? getStatus(word) : "";
+
+  buttons.forEach(([button, status]) => {
+    button.classList.toggle("active", status === currentStatus);
+  });
 }
 
 function setStatus(id, status) {
