@@ -1,40 +1,50 @@
-const STORAGE_KEY = "cisa-flashcards-known";
+const STATUS_KEY = "cisa-flashcards-statuses";
+const STAR_KEY = "cisa-flashcards-stars";
+
+const statusLabels = {
+  new: "Not studied",
+  learning: "Still learning",
+  known: "Mastered",
+};
 
 const state = {
   words: [],
   filtered: [],
   currentIndex: 0,
-  knownIds: new Set(),
-  activeTab: "cards",
+  statuses: {},
+  starredIds: new Set(),
   quizIndex: 0,
   quizScore: 0,
   quizAnswered: false,
 };
 
 const els = {
-  knownCount: document.getElementById("knownCount"),
+  backBtn: document.getElementById("backBtn"),
+  topTermCount: document.getElementById("topTermCount"),
+  termCount: document.getElementById("termCount"),
+  shuffleTopBtn: document.getElementById("shuffleTopBtn"),
   searchInput: document.getElementById("searchInput"),
   sourceFilter: document.getElementById("sourceFilter"),
   statusFilter: document.getElementById("statusFilter"),
-  tabs: document.querySelectorAll(".tab-button"),
-  panels: {
-    cards: document.getElementById("cardsPanel"),
-    quiz: document.getElementById("quizPanel"),
-    list: document.getElementById("listPanel"),
-  },
+  modeCards: document.querySelectorAll(".mode-card"),
+  quizPanel: document.getElementById("quizPanel"),
   emptyState: document.getElementById("emptyState"),
   flashcard: document.getElementById("flashcard"),
   cardPosition: document.getElementById("cardPosition"),
-  cardSource: document.getElementById("cardSource"),
+  cardStatus: document.getElementById("cardStatus"),
   cardWord: document.getElementById("cardWord"),
   cardSimple: document.getElementById("cardSimple"),
   cardArabic: document.getElementById("cardArabic"),
   cardExample: document.getElementById("cardExample"),
+  cardDots: document.getElementById("cardDots"),
   prevBtn: document.getElementById("prevBtn"),
   flipBtn: document.getElementById("flipBtn"),
   nextBtn: document.getElementById("nextBtn"),
-  shuffleBtn: document.getElementById("shuffleBtn"),
   knownBtn: document.getElementById("knownBtn"),
+  notStudiedCount: document.getElementById("notStudiedCount"),
+  learningCount: document.getElementById("learningCount"),
+  masteredCount: document.getElementById("masteredCount"),
+  progressCards: document.querySelectorAll(".progress-card"),
   quizProgress: document.getElementById("quizProgress"),
   quizScore: document.getElementById("quizScore"),
   quizQuestion: document.getElementById("quizQuestion"),
@@ -48,7 +58,7 @@ const els = {
 init();
 
 async function init() {
-  loadProgress();
+  loadLocalState();
   bindEvents();
 
   try {
@@ -56,6 +66,7 @@ async function init() {
     if (!response.ok) {
       throw new Error("Could not load words.");
     }
+
     state.words = await response.json();
     populateSourceFilter();
     applyFilters();
@@ -65,12 +76,27 @@ async function init() {
 }
 
 function bindEvents() {
+  els.backBtn.addEventListener("click", () => {
+    state.currentIndex = 0;
+    renderCard();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
   els.searchInput.addEventListener("input", applyFilters);
   els.sourceFilter.addEventListener("change", applyFilters);
   els.statusFilter.addEventListener("change", applyFilters);
+  els.shuffleTopBtn.addEventListener("click", shuffleCards);
 
-  els.tabs.forEach((tab) => {
-    tab.addEventListener("click", () => switchTab(tab.dataset.tab));
+  els.modeCards.forEach((card) => {
+    card.addEventListener("click", () => switchMode(card.dataset.tab, card));
+  });
+
+  els.progressCards.forEach((card) => {
+    card.addEventListener("click", () => {
+      els.statusFilter.value = card.dataset.statusFilter;
+      applyFilters();
+      document.querySelector(".terms-section").scrollIntoView({ behavior: "smooth" });
+    });
   });
 
   els.flashcard.addEventListener("click", flipCard);
@@ -84,28 +110,34 @@ function bindEvents() {
   els.flipBtn.addEventListener("click", flipCard);
   els.prevBtn.addEventListener("click", previousCard);
   els.nextBtn.addEventListener("click", nextCard);
-  els.shuffleBtn.addEventListener("click", shuffleCards);
-  els.knownBtn.addEventListener("click", toggleKnownCurrent);
+  els.knownBtn.addEventListener("click", toggleMasteredCurrent);
   els.nextQuizBtn.addEventListener("click", nextQuizQuestion);
   els.exportBtn.addEventListener("click", exportCsv);
 }
 
-function loadProgress() {
+function loadLocalState() {
   try {
-    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-    state.knownIds = new Set(stored);
+    state.statuses = JSON.parse(localStorage.getItem(STATUS_KEY) || "{}");
   } catch {
-    state.knownIds = new Set();
+    state.statuses = {};
+  }
+
+  try {
+    state.starredIds = new Set(JSON.parse(localStorage.getItem(STAR_KEY) || "[]"));
+  } catch {
+    state.starredIds = new Set();
   }
 }
 
-function saveProgress() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([...state.knownIds]));
-  els.knownCount.textContent = state.knownIds.size;
+function saveLocalState() {
+  localStorage.setItem(STATUS_KEY, JSON.stringify(state.statuses));
+  localStorage.setItem(STAR_KEY, JSON.stringify([...state.starredIds]));
 }
 
 function populateSourceFilter() {
   const sources = [...new Set(state.words.map((word) => word.source))].sort();
+  els.sourceFilter.innerHTML = '<option value="all">All sources</option>';
+
   sources.forEach((source) => {
     const option = document.createElement("option");
     option.value = source;
@@ -140,44 +172,79 @@ function applyFilters() {
   state.quizScore = 0;
   state.quizAnswered = false;
 
-  saveProgress();
   renderAll();
 }
 
 function renderAll() {
-  const hasWords = state.filtered.length > 0;
-  els.emptyState.hidden = hasWords;
+  const totalText = `${state.words.length} terms`;
+  els.termCount.textContent = totalText;
+  els.topTermCount.textContent = totalText;
+  els.emptyState.hidden = state.filtered.length > 0;
+
   renderCard();
+  renderProgress();
   renderQuiz();
   renderList();
 }
 
 function renderCard() {
   const word = state.filtered[state.currentIndex];
-  const buttons = [els.prevBtn, els.flipBtn, els.nextBtn, els.shuffleBtn, els.knownBtn];
+  const controls = [els.prevBtn, els.flipBtn, els.nextBtn, els.knownBtn, els.shuffleTopBtn];
 
   els.flashcard.classList.remove("flipped");
-  buttons.forEach((button) => {
+  controls.forEach((button) => {
     button.disabled = !word;
   });
 
   if (!word) {
     els.cardPosition.textContent = "0 / 0";
-    els.cardSource.textContent = "No source";
-    els.cardWord.textContent = "No words";
+    els.cardStatus.textContent = "No terms";
+    els.cardWord.textContent = "No terms";
     els.cardSimple.textContent = "Try changing your filters.";
     els.cardArabic.textContent = "لا توجد كلمات";
     els.cardExample.textContent = "";
+    els.knownBtn.textContent = "Mark Mastered";
+    renderDots();
     return;
   }
 
   els.cardPosition.textContent = `${state.currentIndex + 1} / ${state.filtered.length}`;
-  els.cardSource.textContent = word.source;
+  els.cardStatus.textContent = statusLabels[getStatus(word)];
   els.cardWord.textContent = word.word;
   els.cardSimple.textContent = word.simple;
   els.cardArabic.textContent = word.arabic;
   els.cardExample.textContent = word.example;
-  els.knownBtn.textContent = state.knownIds.has(word.id) ? "Mark New" : "Mark Known";
+  els.knownBtn.textContent = getStatus(word) === "known" ? "Mark Not Studied" : "Mark Mastered";
+  renderDots();
+}
+
+function renderDots() {
+  els.cardDots.innerHTML = "";
+  const maxDots = Math.min(state.filtered.length, 12);
+
+  for (let index = 0; index < maxDots; index += 1) {
+    const dot = document.createElement("button");
+    dot.type = "button";
+    dot.className = `card-dot${index === state.currentIndex ? " active" : ""}`;
+    dot.setAttribute("aria-label", `Go to card ${index + 1}`);
+    dot.addEventListener("click", () => {
+      state.currentIndex = index;
+      renderCard();
+    });
+    els.cardDots.appendChild(dot);
+  }
+}
+
+function renderProgress() {
+  const counts = { new: 0, learning: 0, known: 0 };
+
+  state.words.forEach((word) => {
+    counts[getStatus(word)] += 1;
+  });
+
+  els.notStudiedCount.textContent = counts.new;
+  els.learningCount.textContent = counts.learning;
+  els.masteredCount.textContent = counts.known;
 }
 
 function renderQuiz() {
@@ -195,14 +262,13 @@ function renderQuiz() {
 
   els.quizProgress.textContent = `Question ${state.quizIndex + 1} / ${state.filtered.length}`;
   els.quizScore.textContent = `Score ${state.quizScore}`;
-  els.quizQuestion.textContent = `What does "${word.word}" mean?`;
+  els.quizQuestion.textContent = `What is the definition of "${word.word}"?`;
 
-  const options = buildQuizOptions(word);
-  options.forEach((option) => {
+  buildQuizOptions(word).forEach((option) => {
     const button = document.createElement("button");
     button.type = "button";
-    button.textContent = option.arabic;
-    button.addEventListener("click", () => answerQuiz(button, option.id === word.id, word.arabic));
+    button.textContent = option.simple;
+    button.addEventListener("click", () => answerQuiz(button, option.id === word.id, word));
     els.quizOptions.appendChild(button);
   });
 }
@@ -210,41 +276,53 @@ function renderQuiz() {
 function renderList() {
   els.wordsList.innerHTML = "";
 
-  state.filtered.forEach((word) => {
-    const row = document.createElement("article");
-    row.className = "word-row";
+  state.filtered.forEach((word, index) => {
+    const card = document.createElement("article");
+    card.className = "term-card";
 
-    const content = document.createElement("div");
+    const content = document.createElement("button");
+    content.className = "term-content";
+    content.type = "button";
     content.innerHTML = `
       <h3>${escapeHtml(word.word)}</h3>
-      <p dir="rtl">${escapeHtml(word.arabic)}</p>
-      <p>${escapeHtml(word.simple)} · ${escapeHtml(word.example)}</p>
-      <div class="tag-row">
-        <span class="tag">${escapeHtml(word.source)}</span>
-        <span class="tag">${escapeHtml(word.category)}</span>
-        <span class="tag">${escapeHtml(getStatus(word))}</span>
-      </div>
+      <p class="term-arabic" dir="rtl">${escapeHtml(word.arabic)}</p>
+      <p class="term-simple">${escapeHtml(word.simple)}</p>
+      <p class="term-source">${escapeHtml(word.source)} · ${escapeHtml(statusLabels[getStatus(word)])}</p>
     `;
+    content.addEventListener("click", () => selectWord(index));
 
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = state.knownIds.has(word.id) ? "Mark New" : "Mark Known";
-    button.addEventListener("click", () => {
-      toggleKnown(word.id);
-      renderAll();
-    });
+    const actions = document.createElement("div");
+    actions.className = "term-actions";
 
-    row.append(content, button);
-    els.wordsList.appendChild(row);
+    const speak = document.createElement("button");
+    speak.className = "term-action";
+    speak.type = "button";
+    speak.textContent = "↗";
+    speak.setAttribute("aria-label", `Pronounce ${word.word}`);
+    speak.addEventListener("click", () => speakWord(word.word));
+
+    const star = document.createElement("button");
+    star.className = `term-action${state.starredIds.has(word.id) ? " starred" : ""}`;
+    star.type = "button";
+    star.textContent = "☆";
+    star.setAttribute("aria-label", `Star ${word.word}`);
+    star.addEventListener("click", () => toggleStar(word.id));
+
+    actions.append(speak, star);
+    card.append(content, actions);
+    els.wordsList.appendChild(card);
   });
 }
 
-function switchTab(tabName) {
-  state.activeTab = tabName;
-  els.tabs.forEach((tab) => tab.classList.toggle("active", tab.dataset.tab === tabName));
-  Object.entries(els.panels).forEach(([name, panel]) => {
-    panel.classList.toggle("active", name === tabName);
-  });
+function switchMode(mode, selectedCard) {
+  els.modeCards.forEach((card) => card.classList.toggle("active", card === selectedCard));
+  els.quizPanel.hidden = mode !== "quiz";
+
+  if (mode === "cards") {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } else {
+    els.quizPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 }
 
 function flipCard() {
@@ -269,32 +347,28 @@ function shuffleCards() {
     const randomIndex = Math.floor(Math.random() * (index + 1));
     [state.filtered[index], state.filtered[randomIndex]] = [state.filtered[randomIndex], state.filtered[index]];
   }
+
   state.currentIndex = 0;
   state.quizIndex = 0;
+  state.quizAnswered = false;
   renderAll();
 }
 
-function toggleKnownCurrent() {
+function toggleMasteredCurrent() {
   const word = state.filtered[state.currentIndex];
   if (!word) return;
-  toggleKnown(word.id);
+
+  setStatus(word.id, getStatus(word) === "known" ? "new" : "known");
   renderAll();
 }
 
-function toggleKnown(id) {
-  if (state.knownIds.has(id)) {
-    state.knownIds.delete(id);
-  } else {
-    state.knownIds.add(id);
-  }
-  saveProgress();
+function setStatus(id, status) {
+  state.statuses[id] = status;
+  saveLocalState();
 }
 
 function getStatus(word) {
-  if (state.knownIds.has(word.id)) {
-    return "known";
-  }
-  return word.status || "new";
+  return state.statuses[word.id] || word.status || "new";
 }
 
 function buildQuizOptions(correctWord) {
@@ -306,27 +380,31 @@ function buildQuizOptions(correctWord) {
   return [correctWord, ...choices].sort(() => Math.random() - 0.5);
 }
 
-function answerQuiz(button, isCorrect, correctArabic) {
+function answerQuiz(button, isCorrect, correctWord) {
   if (state.quizAnswered) return;
   state.quizAnswered = true;
 
   [...els.quizOptions.children].forEach((optionButton) => {
     optionButton.disabled = true;
-    if (optionButton.textContent === correctArabic) {
+    if (optionButton.textContent === correctWord.simple) {
       optionButton.classList.add("correct");
     }
   });
 
   if (isCorrect) {
     state.quizScore += 1;
+    setStatus(correctWord.id, "known");
     button.classList.add("correct");
-    els.quizFeedback.textContent = "Correct.";
+    els.quizFeedback.textContent = "Correct. Marked as mastered.";
   } else {
+    setStatus(correctWord.id, "learning");
     button.classList.add("wrong");
-    els.quizFeedback.textContent = `Not quite. Correct answer: ${correctArabic}`;
+    els.quizFeedback.textContent = `Correct answer: ${correctWord.simple}`;
   }
 
   els.quizScore.textContent = `Score ${state.quizScore}`;
+  renderProgress();
+  renderList();
 }
 
 function nextQuizQuestion() {
@@ -334,6 +412,31 @@ function nextQuizQuestion() {
   state.quizIndex = (state.quizIndex + 1) % state.filtered.length;
   state.quizAnswered = false;
   renderQuiz();
+}
+
+function selectWord(index) {
+  state.currentIndex = index;
+  renderCard();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function speakWord(word) {
+  if (!("speechSynthesis" in window)) return;
+  const utterance = new SpeechSynthesisUtterance(word);
+  utterance.lang = "en-US";
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+}
+
+function toggleStar(id) {
+  if (state.starredIds.has(id)) {
+    state.starredIds.delete(id);
+  } else {
+    state.starredIds.add(id);
+  }
+
+  saveLocalState();
+  renderList();
 }
 
 function exportCsv() {
@@ -376,10 +479,12 @@ function escapeHtml(value) {
 }
 
 function showLoadError(error) {
-  els.cardWord.textContent = "Could not load words";
+  els.cardPosition.textContent = "0 / 0";
+  els.cardStatus.textContent = "No terms";
+  els.cardWord.textContent = "Could not load terms";
   els.cardSimple.textContent = error.message;
   els.cardArabic.textContent = "تعذر تحميل الكلمات";
-  els.quizQuestion.textContent = "Could not load quiz.";
+  els.cardExample.textContent = "";
   els.emptyState.hidden = false;
   els.emptyState.textContent = "Make sure data/words.json exists next to these files.";
 }
