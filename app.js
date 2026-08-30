@@ -297,7 +297,7 @@ function renderList() {
     const speak = document.createElement("button");
     speak.className = "term-action";
     speak.type = "button";
-    speak.textContent = "↗";
+    speak.innerHTML = '<span class="speak-icon" aria-hidden="true"><span></span></span>';
     speak.setAttribute("aria-label", `Pronounce ${word.word}`);
     speak.addEventListener("click", () => speakWord(word.word));
 
