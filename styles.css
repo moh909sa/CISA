@@ -93,6 +93,7 @@ label span,
 .icon-button,
 .pill-button,
 .primary-button,
+.status-button,
 .mode-card,
 .progress-card,
 .card-dot,
@@ -117,7 +118,6 @@ label span,
 }
 
 .icon-button.large {
-  min-width: 3.4rem;
   min-width: 3rem;
   min-height: 3rem;
   font-size: 1.65rem;
@@ -135,7 +135,7 @@ label span,
 .study-shell {
   display: grid;
   gap: 1.75rem;
-  padding: 1rem 0 7rem;
+  padding: 1rem 0 3rem;
 }
 
 .hero-study {
