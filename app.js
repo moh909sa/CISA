@@ -120,7 +120,19 @@ function bindEvents() {
   });
 
   els.flipBtn.addEventListener("click", flipCard);
-  els.cardSpeakBtn.addEventListener("click", speakCurrentWord);
+  els.cardSpeakBtn.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    speakCurrentWord();
+  });
+  document.addEventListener("click", (event) => {
+    const speakButton = event.target.closest("#cardSpeakBtn");
+    if (!speakButton) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    speakCurrentWord();
+  });
   els.prevBtn.addEventListener("click", previousCard);
   els.nextBtn.addEventListener("click", nextCard);
   els.notStudiedBtn.addEventListener("click", () => setCurrentStatus("new"));
