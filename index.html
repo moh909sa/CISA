@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CISA Study Flashcards</title>
+  <meta name="description" content="A lightweight GitHub Pages flashcards app for CISA and English vocabulary study.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">CISA Study</p>
+      <h1>Flashcards & Vocabulary</h1>
+      <p class="subtitle">Simple, fast, and saved locally on your device.</p>
+    </div>
+    <div class="progress-card" aria-live="polite">
+      <span id="knownCount">0</span>
+      <small>known words</small>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <section class="toolbar" aria-label="Study filters">
+      <label class="search-box">
+        <span>Search</span>
+        <input id="searchInput" type="search" placeholder="Search word, Arabic, source...">
+      </label>
+
+      <label>
+        <span>Source</span>
+        <select id="sourceFilter">
+          <option value="all">All sources</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Status</span>
+        <select id="statusFilter">
+          <option value="all">All status</option>
+          <option value="new">New</option>
+          <option value="known">Known</option>
+          <option value="learning">Learning</option>
+        </select>
+      </label>
+    </section>
+
+    <nav class="tabs" aria-label="Study modes">
+      <button class="tab-button active" data-tab="cards" type="button">Flashcards</button>
+      <button class="tab-button" data-tab="quiz" type="button">Quiz</button>
+      <button class="tab-button" data-tab="list" type="button">List</button>
+    </nav>
+
+    <section id="cardsPanel" class="panel active">
+      <div class="card-meta">
+        <span id="cardPosition">0 / 0</span>
+        <span id="cardSource">Source</span>
+      </div>
+
+      <article id="flashcard" class="flashcard" tabindex="0" role="button" aria-label="Flip flashcard">
+        <div class="flashcard-inner">
+          <div class="card-face card-front">
+            <p class="label">Word</p>
+            <h2 id="cardWord">Loading...</h2>
+            <p id="cardSimple" class="simple-text"></p>
+          </div>
+          <div class="card-face card-back">
+            <p class="label">Meaning</p>
+            <h2 id="cardArabic" dir="rtl">...</h2>
+            <p id="cardExample" class="example-text"></p>
+          </div>
+        </div>
+      </article>
+
+      <div class="actions grid-actions">
+        <button id="prevBtn" type="button">Previous</button>
+        <button id="flipBtn" type="button" class="primary">Flip</button>
+        <button id="nextBtn" type="button">Next</button>
+        <button id="shuffleBtn" type="button">Shuffle</button>
+        <button id="knownBtn" type="button">Mark Known</button>
+      </div>
+    </section>
+
+    <section id="quizPanel" class="panel">
+      <div class="quiz-card">
+        <div class="card-meta">
+          <span id="quizProgress">Question 0 / 0</span>
+          <span id="quizScore">Score 0</span>
+        </div>
+        <h2 id="quizQuestion">Choose the correct meaning.</h2>
+        <div id="quizOptions" class="quiz-options"></div>
+        <p id="quizFeedback" class="quiz-feedback" aria-live="polite"></p>
+        <button id="nextQuizBtn" type="button" class="primary">Next Question</button>
+      </div>
+    </section>
+
+    <section id="listPanel" class="panel">
+      <div class="list-header">
+        <h2>All Words</h2>
+        <button id="exportBtn" type="button">Export CSV</button>
+      </div>
+      <div id="wordsList" class="words-list"></div>
+    </section>
+
+    <p id="emptyState" class="empty-state" hidden>No words match your filters.</p>
+  </main>
+
+  <footer class="site-footer">
+    <p>Progress is stored in your browser with localStorage. No account, no backend.</p>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
