@@ -564,6 +564,45 @@ button:focus-visible {
   font-size: 1.65rem;
 }
 
+.speak-icon {
+  position: relative;
+  display: block;
+  width: 1.55rem;
+  height: 1.55rem;
+}
+
+.speak-icon::before {
+  content: "";
+  position: absolute;
+  left: 0.15rem;
+  top: 0.48rem;
+  width: 0.36rem;
+  height: 0.58rem;
+  border-radius: 0.12rem;
+  background: currentColor;
+}
+
+.speak-icon::after {
+  content: "";
+  position: absolute;
+  left: 0.45rem;
+  top: 0.3rem;
+  border-top: 0.48rem solid transparent;
+  border-bottom: 0.48rem solid transparent;
+  border-right: 0.64rem solid currentColor;
+}
+
+.speak-icon span {
+  position: absolute;
+  right: 0;
+  top: 0.28rem;
+  width: 0.52rem;
+  height: 0.96rem;
+  border: 0.2rem solid currentColor;
+  border-left: 0;
+  border-radius: 0 999px 999px 0;
+}
+
 .term-action.starred {
   color: var(--yellow);
 }
