@@ -1,0 +1,102 @@
+[
+  {
+    "id": "information-systems",
+    "word": "Information Systems",
+    "arabic": "أنظمة المعلومات",
+    "simple": "systems that collect, process, store, and share information",
+    "example": "Information systems support business processes and decision-making.",
+    "source": "CISA Exam Essentials",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "is-audit",
+    "word": "IS Audit",
+    "arabic": "تدقيق أنظمة المعلومات",
+    "simple": "checking information systems, controls, and risks",
+    "example": "An IS audit reviews whether controls are designed and working properly.",
+    "source": "CISA Exam Essentials",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "assurance",
+    "word": "Assurance",
+    "arabic": "تأكيد أو ضمان مهني",
+    "simple": "confidence that something is reliable or properly controlled",
+    "example": "Audit work provides assurance about the effectiveness of controls.",
+    "source": "CISA Exam Essentials",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "standards",
+    "word": "Standards",
+    "arabic": "معايير",
+    "simple": "required rules or principles professionals should follow",
+    "example": "Auditors follow standards to keep their work consistent and reliable.",
+    "source": "CISA Exam Essentials",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "guidelines",
+    "word": "Guidelines",
+    "arabic": "إرشادات",
+    "simple": "recommended ways to apply standards or do work",
+    "example": "Guidelines help auditors understand how to apply professional standards.",
+    "source": "CISA Exam Essentials",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "code-of-ethics",
+    "word": "Code of Ethics",
+    "arabic": "مدونة أخلاقيات المهنة",
+    "simple": "rules for honest and professional behavior",
+    "example": "The Code of Ethics guides auditors to act with integrity.",
+    "source": "CISA Exam Essentials",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "objectivity",
+    "word": "Objectivity",
+    "arabic": "الموضوعية",
+    "simple": "being fair and unbiased",
+    "example": "Objectivity is important because auditors must not be influenced by personal interests.",
+    "source": "CISA Exam Essentials",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "credibility",
+    "word": "Credibility",
+    "arabic": "المصداقية",
+    "simple": "being trusted and believable",
+    "example": "Professional standards increase the credibility of audit results.",
+    "source": "CISA Exam Essentials",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "abandoned",
+    "word": "abandoned",
+    "arabic": "مهجور أو متروك",
+    "simple": "left empty or no longer used",
+    "example": "The boys walked past an abandoned building.",
+    "source": "The Catcher in the Rye",
+    "category": "English",
+    "status": "new"
+  },
+  {
+    "id": "enormous",
+    "word": "enormous",
+    "arabic": "ضخم جدًا",
+    "simple": "very big",
+    "example": "It was an enormous building.",
+    "source": "The Catcher in the Rye",
+    "category": "English",
+    "status": "new"
+  }
+]
