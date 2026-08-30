@@ -3,111 +3,148 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CISA Study Flashcards</title>
-  <meta name="description" content="A lightweight GitHub Pages flashcards app for CISA and English vocabulary study.">
+  <title>CISA Vocabulary</title>
+  <meta name="description" content="A lightweight Quizlet-style flashcards app for CISA and English vocabulary.">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="site-header">
-    <div>
-      <p class="eyebrow">CISA Study</p>
-      <h1>Flashcards & Vocabulary</h1>
-      <p class="subtitle">Simple, fast, and saved locally on your device.</p>
+  <header class="topbar">
+    <button id="backBtn" class="icon-button" type="button" aria-label="Back to first card">←</button>
+    <div class="topbar-title">
+      <span>CISA Vocabulary</span>
+      <small id="topTermCount">0 terms</small>
     </div>
-    <div class="progress-card" aria-live="polite">
-      <span id="knownCount">0</span>
-      <small>known words</small>
+    <div class="topbar-actions">
+      <button id="shuffleTopBtn" class="pill-button" type="button">Shuffle</button>
+      <button id="exportBtn" class="icon-button" type="button" aria-label="Export CSV">CSV</button>
     </div>
   </header>
 
-  <main class="app-shell">
-    <section class="toolbar" aria-label="Study filters">
-      <label class="search-box">
-        <span>Search</span>
-        <input id="searchInput" type="search" placeholder="Search word, Arabic, source...">
-      </label>
+  <main class="study-shell">
+    <section class="hero-study" aria-label="Flashcard study area">
+      <div class="card-meta">
+        <span id="cardPosition">0 / 0</span>
+        <span id="cardStatus">Not studied</span>
+      </div>
 
+      <article id="flashcard" class="flashcard" tabindex="0" role="button" aria-label="Flip flashcard">
+        <div class="flashcard-inner">
+          <div class="card-face card-front">
+            <p class="face-label">Term</p>
+            <h1 id="cardWord">Loading...</h1>
+          </div>
+          <div class="card-face card-back">
+            <p class="face-label">Definition</p>
+            <h2 id="cardSimple">...</h2>
+            <p id="cardArabic" class="arabic-meaning" dir="rtl"></p>
+            <p id="cardExample" class="example-text"></p>
+          </div>
+        </div>
+      </article>
+
+      <div id="cardDots" class="card-dots" aria-label="Card position"></div>
+
+      <div class="card-controls">
+        <button id="prevBtn" class="icon-button large" type="button" aria-label="Previous card">‹</button>
+        <button id="flipBtn" class="primary-button" type="button">Flip</button>
+        <button id="nextBtn" class="icon-button large" type="button" aria-label="Next card">›</button>
+      </div>
+    </section>
+
+    <section class="set-summary">
+      <h2>CISA Vocabulary</h2>
+      <div class="creator-row">
+        <span class="avatar">MS</span>
+        <strong>moh_saeed_shbnan997</strong>
+        <span class="divider"></span>
+        <span id="termCount">0 terms</span>
+      </div>
+    </section>
+
+    <section class="mode-grid" aria-label="Study modes">
+      <button class="mode-card active" data-tab="cards" type="button">
+        <span class="mode-icon cards-icon"></span>
+        <strong>Flashcards</strong>
+      </button>
+      <button class="mode-card" data-tab="quiz" type="button">
+        <span class="mode-icon learn-icon"></span>
+        <strong>Learn</strong>
+      </button>
+      <button class="mode-card" data-tab="quiz" type="button">
+        <span class="mode-icon test-icon"></span>
+        <strong>Test</strong>
+      </button>
+    </section>
+
+    <section id="quizPanel" class="quiz-panel" hidden>
+      <div class="quiz-card">
+        <div class="card-meta">
+          <span id="quizProgress">Question 0 / 0</span>
+          <span id="quizScore">Score 0</span>
+        </div>
+        <h2 id="quizQuestion">Choose the correct definition.</h2>
+        <div id="quizOptions" class="quiz-options"></div>
+        <p id="quizFeedback" class="quiz-feedback" aria-live="polite"></p>
+        <button id="nextQuizBtn" class="primary-button" type="button">Next Question</button>
+      </div>
+    </section>
+
+    <section class="progress-section" aria-label="Your progress">
+      <h2>Your Progress</h2>
+      <div class="progress-grid">
+        <button class="progress-card" data-status-filter="new" type="button">
+          <span class="ring ring-blue"><b id="notStudiedCount">0</b></span>
+          <strong>Not studied</strong>
+          <span>›</span>
+        </button>
+        <button class="progress-card muted-card" data-status-filter="learning" type="button">
+          <span class="ring ring-brown"><b id="learningCount">0</b></span>
+          <strong>Still learning</strong>
+          <span>›</span>
+        </button>
+        <button class="progress-card muted-card" data-status-filter="known" type="button">
+          <span class="ring ring-green"><b id="masteredCount">0</b></span>
+          <strong>Mastered</strong>
+          <span>›</span>
+        </button>
+      </div>
+    </section>
+
+    <section class="filters-panel" aria-label="Search and filters">
+      <label>
+        <span>Search</span>
+        <input id="searchInput" type="search" placeholder="Search term, Arabic, definition...">
+      </label>
       <label>
         <span>Source</span>
         <select id="sourceFilter">
           <option value="all">All sources</option>
         </select>
       </label>
-
       <label>
         <span>Status</span>
         <select id="statusFilter">
           <option value="all">All status</option>
-          <option value="new">New</option>
-          <option value="known">Known</option>
-          <option value="learning">Learning</option>
+          <option value="new">Not studied</option>
+          <option value="learning">Still learning</option>
+          <option value="known">Mastered</option>
         </select>
       </label>
     </section>
 
-    <nav class="tabs" aria-label="Study modes">
-      <button class="tab-button active" data-tab="cards" type="button">Flashcards</button>
-      <button class="tab-button" data-tab="quiz" type="button">Quiz</button>
-      <button class="tab-button" data-tab="list" type="button">List</button>
-    </nav>
-
-    <section id="cardsPanel" class="panel active">
-      <div class="card-meta">
-        <span id="cardPosition">0 / 0</span>
-        <span id="cardSource">Source</span>
-      </div>
-
-      <article id="flashcard" class="flashcard" tabindex="0" role="button" aria-label="Flip flashcard">
-        <div class="flashcard-inner">
-          <div class="card-face card-front">
-            <p class="label">Word</p>
-            <h2 id="cardWord">Loading...</h2>
-            <p id="cardSimple" class="simple-text"></p>
-          </div>
-          <div class="card-face card-back">
-            <p class="label">Meaning</p>
-            <h2 id="cardArabic" dir="rtl">...</h2>
-            <p id="cardExample" class="example-text"></p>
-          </div>
-        </div>
-      </article>
-
-      <div class="actions grid-actions">
-        <button id="prevBtn" type="button">Previous</button>
-        <button id="flipBtn" type="button" class="primary">Flip</button>
-        <button id="nextBtn" type="button">Next</button>
-        <button id="shuffleBtn" type="button">Shuffle</button>
-        <button id="knownBtn" type="button">Mark Known</button>
-      </div>
-    </section>
-
-    <section id="quizPanel" class="panel">
-      <div class="quiz-card">
-        <div class="card-meta">
-          <span id="quizProgress">Question 0 / 0</span>
-          <span id="quizScore">Score 0</span>
-        </div>
-        <h2 id="quizQuestion">Choose the correct meaning.</h2>
-        <div id="quizOptions" class="quiz-options"></div>
-        <p id="quizFeedback" class="quiz-feedback" aria-live="polite"></p>
-        <button id="nextQuizBtn" type="button" class="primary">Next Question</button>
-      </div>
-    </section>
-
-    <section id="listPanel" class="panel">
-      <div class="list-header">
-        <h2>All Words</h2>
-        <button id="exportBtn" type="button">Export CSV</button>
+    <section class="terms-section">
+      <div class="terms-header">
+        <h2>Terms</h2>
+        <span>Original</span>
       </div>
       <div id="wordsList" class="words-list"></div>
+      <p id="emptyState" class="empty-state" hidden>No terms match your filters.</p>
     </section>
-
-    <p id="emptyState" class="empty-state" hidden>No words match your filters.</p>
   </main>
 
-  <footer class="site-footer">
-    <p>Progress is stored in your browser with localStorage. No account, no backend.</p>
-  </footer>
+  <div class="sticky-study">
+    <button id="knownBtn" class="study-this-button" type="button">Mark Mastered</button>
+  </div>
 
   <script src="app.js" defer></script>
 </body>
