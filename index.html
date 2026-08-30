@@ -49,6 +49,12 @@
         <button id="flipBtn" class="primary-button" type="button">Flip</button>
         <button id="nextBtn" class="icon-button large" type="button" aria-label="Next card">›</button>
       </div>
+
+      <div class="status-controls" aria-label="Card learning status">
+        <button id="notStudiedBtn" class="status-button" type="button">Not studied</button>
+        <button id="learningBtn" class="status-button learning" type="button">Still learning</button>
+        <button id="masteredBtn" class="status-button mastered" type="button">Mastered</button>
+      </div>
     </section>
 
     <section class="set-summary">
@@ -141,10 +147,6 @@
       <p id="emptyState" class="empty-state" hidden>No terms match your filters.</p>
     </section>
   </main>
-
-  <div class="sticky-study">
-    <button id="knownBtn" class="study-this-button" type="button">Mark Mastered</button>
-  </div>
 
   <script src="app.js" defer></script>
 </body>
