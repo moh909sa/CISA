@@ -24,7 +24,13 @@
     <section class="hero-study" aria-label="Flashcard study area">
       <div class="card-meta">
         <span id="cardPosition">0 / 0</span>
-        <span id="cardStatus">Not studied</span>
+        <div class="card-meta-actions">
+          <span id="cardStatus">Not studied</span>
+          <button id="cardSpeakBtn" class="card-speak-button" type="button" aria-label="Pronounce current term">
+            <span class="speak-icon" aria-hidden="true"><span></span></span>
+            <span id="voiceLabel">Listen</span>
+          </button>
+        </div>
       </div>
 
       <article id="flashcard" class="flashcard" tabindex="0" role="button" aria-label="Flip flashcard">
