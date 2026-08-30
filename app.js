@@ -16,6 +16,8 @@ const state = {
   quizIndex: 0,
   quizScore: 0,
   quizAnswered: false,
+  voiceIndex: 0,
+  voices: [],
 };
 
 const els = {
@@ -32,6 +34,8 @@ const els = {
   flashcard: document.getElementById("flashcard"),
   cardPosition: document.getElementById("cardPosition"),
   cardStatus: document.getElementById("cardStatus"),
+  cardSpeakBtn: document.getElementById("cardSpeakBtn"),
+  voiceLabel: document.getElementById("voiceLabel"),
   cardWord: document.getElementById("cardWord"),
   cardSimple: document.getElementById("cardSimple"),
   cardArabic: document.getElementById("cardArabic"),
@@ -62,6 +66,12 @@ init();
 async function init() {
   loadLocalState();
   bindEvents();
+  refreshVoices();
+
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.addEventListener?.("voiceschanged", refreshVoices);
+    window.speechSynthesis.onvoiceschanged = refreshVoices;
+  }
 
   try {
     const response = await fetch("data/words.json", { cache: "no-store" });
@@ -110,6 +120,7 @@ function bindEvents() {
   });
 
   els.flipBtn.addEventListener("click", flipCard);
+  els.cardSpeakBtn.addEventListener("click", speakCurrentWord);
   els.prevBtn.addEventListener("click", previousCard);
   els.nextBtn.addEventListener("click", nextCard);
   els.notStudiedBtn.addEventListener("click", () => setCurrentStatus("new"));
@@ -197,6 +208,7 @@ function renderCard() {
     els.prevBtn,
     els.flipBtn,
     els.nextBtn,
+    els.cardSpeakBtn,
     els.notStudiedBtn,
     els.learningBtn,
     els.masteredBtn,
@@ -216,6 +228,7 @@ function renderCard() {
     els.cardArabic.textContent = "لا توجد كلمات";
     els.cardExample.textContent = "";
     updateStatusButtons(null);
+    updateVoiceLabel();
     renderDots();
     return;
   }
@@ -227,6 +240,7 @@ function renderCard() {
   els.cardArabic.textContent = word.arabic;
   els.cardExample.textContent = word.example;
   updateStatusButtons(word);
+  updateVoiceLabel();
   renderDots();
 }
 
@@ -445,12 +459,56 @@ function selectWord(index) {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+function speakCurrentWord() {
+  const word = state.filtered[state.currentIndex];
+  if (!word) return;
+
+  speakWord(word.word);
+}
+
+function refreshVoices() {
+  if (!("speechSynthesis" in window)) {
+    state.voices = [];
+    updateVoiceLabel();
+    return;
+  }
+
+  state.voices = window.speechSynthesis
+    .getVoices()
+    .filter((voice) => /^en[-_]/i.test(voice.lang))
+    .slice(0, 5);
+  updateVoiceLabel();
+}
+
+function updateVoiceLabel() {
+  if (!els.voiceLabel) return;
+
+  const count = state.voices.length;
+  els.voiceLabel.textContent = count > 1
+    ? `Listen ${(state.voiceIndex % count) + 1}/${count}`
+    : "Listen";
+}
+
 function speakWord(word) {
   if (!("speechSynthesis" in window)) return;
+
+  if (state.voices.length === 0) {
+    refreshVoices();
+  }
+
+  const voices = state.voices;
   const utterance = new SpeechSynthesisUtterance(word);
   utterance.lang = "en-US";
+  utterance.rate = 0.88;
+
+  if (voices.length > 0) {
+    utterance.voice = voices[state.voiceIndex % voices.length];
+    state.voiceIndex = (state.voiceIndex + 1) % voices.length;
+  }
+
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(utterance);
+  updateVoiceLabel();
 }
 
 function toggleStar(id) {
