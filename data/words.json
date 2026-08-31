@@ -78,5 +78,45 @@
     "source": "CISA Notes",
     "category": "CISA",
     "status": "new"
+  },
+  {
+    "id": "conducting",
+    "word": "Conducting",
+    "arabic": "إجراء / تنفيذ",
+    "simple": "carrying out or performing an activity",
+    "example": "By conducting audits, organizations can identify vulnerabilities and improve controls.",
+    "source": "CISA Study Guide",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "compliance",
+    "word": "Compliance",
+    "arabic": "الامتثال / الالتزام",
+    "simple": "following laws, regulations, standards, or policies",
+    "example": "IS audits help organizations check compliance with regulations and internal policies.",
+    "source": "CISA Study Guide",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "regulations",
+    "word": "Regulations",
+    "arabic": "اللوائح / الأنظمة الرسمية",
+    "simple": "official rules that organizations must follow",
+    "example": "Auditors review compliance with regulations that apply to the organization.",
+    "source": "CISA Study Guide",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "mitigate",
+    "word": "Mitigate",
+    "arabic": "يخفف / يقلل من الخطر",
+    "simple": "to reduce the likelihood or impact of a risk",
+    "example": "Organizations use controls to mitigate risks to sensitive information.",
+    "source": "CISA Study Guide",
+    "category": "CISA",
+    "status": "new"
   }
 ]
