@@ -118,5 +118,35 @@
     "source": "CISA Study Guide",
     "category": "CISA",
     "status": "new"
+  },
+  {
+    "id": "board-level-committee",
+    "word": "Board-level Committee",
+    "arabic": "لجنة على مستوى مجلس الإدارة",
+    "simple": "a high-level committee that reports to or belongs to the board of directors",
+    "example": "The internal audit function should ideally report to a board-level committee.",
+    "source": "CISA Study Guide",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "interfere",
+    "word": "Interfere",
+    "arabic": "يتدخل / يعرقل",
+    "simple": "to get involved in a way that affects or blocks something",
+    "example": "No business function should interfere in the internal audit process.",
+    "source": "CISA Study Guide",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "candidate",
+    "word": "Candidate",
+    "arabic": "مرشح / متقدم للاختبار",
+    "simple": "a person who is preparing for or taking an exam or applying for a role",
+    "example": "A CISA candidate should understand the purpose of an audit charter.",
+    "source": "CISA Study Guide",
+    "category": "CISA",
+    "status": "new"
   }
 ]
