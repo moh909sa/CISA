@@ -148,5 +148,15 @@
     "source": "CISA Study Guide",
     "category": "CISA",
     "status": "new"
+  },
+  {
+    "id": "hence",
+    "word": "Hence",
+    "arabic": "لذلك / ومن ثم / بناءً على ذلك",
+    "simple": "for this reason; as a result",
+    "example": "The control was not operating effectively; hence, the auditor reported a finding.",
+    "source": "CISA Study Guide",
+    "category": "CISA",
+    "status": "new"
   }
 ]
