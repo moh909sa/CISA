@@ -158,5 +158,15 @@
     "source": "CISA Study Guide",
     "category": "CISA",
     "status": "new"
+  },
+  {
+    "id": "initial",
+    "word": "Initial",
+    "arabic": "أولي / مبدئي / في البداية",
+    "simple": "happening at the beginning or first stage of something",
+    "example": "The auditor performed an initial review to understand the system and its controls.",
+    "source": "CISA Study Guide",
+    "category": "CISA",
+    "status": "new"
   }
 ]
