@@ -168,5 +168,45 @@
     "source": "CISA Study Guide",
     "category": "CISA",
     "status": "new"
+  },
+  {
+    "id": "aspirants",
+    "word": "Aspirants",
+    "arabic": "الطامحون / الراغبون في الحصول على الشهادة",
+    "simple": "people who want to achieve something, such as a certification",
+    "example": "CISA aspirants should understand the important terms used in audit planning.",
+    "source": "CISA Study Guide",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "objective-oriented",
+    "word": "Objective-Oriented",
+    "arabic": "موجه نحو الهدف",
+    "simple": "focused on achieving a specific objective",
+    "example": "Audit planning makes the audit process more structured and objective-oriented.",
+    "source": "CISA Study Guide",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "inventory",
+    "word": "Inventory",
+    "arabic": "قائمة حصر / جرد",
+    "simple": "a complete list of items, systems, processes, or assets",
+    "example": "An audit universe is an inventory of all functions and processes in the organization.",
+    "source": "CISA Study Guide",
+    "category": "CISA",
+    "status": "new"
+  },
+  {
+    "id": "qualitative-risk-assessment",
+    "word": "Qualitative Risk Assessment",
+    "arabic": "تقييم مخاطر وصفي / نوعي",
+    "simple": "assessing risk using descriptions such as high, medium, and low",
+    "example": "Qualitative risk assessment may classify a risk as high, medium, or low.",
+    "source": "CISA Study Guide",
+    "category": "CISA",
+    "status": "new"
   }
 ]
