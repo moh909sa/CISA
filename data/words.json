@@ -208,5 +208,15 @@
     "source": "CISA Study Guide",
     "category": "CISA",
     "status": "new"
+  },
+  {
+    "id": "criteria",
+    "word": "Criteria",
+    "arabic": "معايير / شروط التقييم",
+    "simple": "standards or rules used to judge or evaluate something",
+    "example": "The auditor used specific criteria to evaluate whether the control was effective.",
+    "source": "CISA Study Guide",
+    "category": "CISA",
+    "status": "new"
   }
 ]
